@@ -1,0 +1,64 @@
+﻿@model GeradorDeRotas.Models.Equipe
+
+@{
+	ViewData["Title"] = "Create";
+}
+
+<h1>Criar</h1>
+
+<h4>Equipe</h4>
+<hr />
+<div class="row">
+	<div class="col-md-4">
+		<form asp-action="Create">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="form-group">
+				Nome da Equipe
+				<input asp-for="NomeEquipe" class="form-control" />
+				<span asp-validation-for="NomeEquipe" class="text-danger"></span>
+			</div>
+			
+			<div class="form-group">
+				Pessoas
+				@Html.ListBox("Cpfs", ViewBag.Pessoas, new { id = "multiSelectDropDown", multiple = "multiple" })
+			</div>
+			<div class="form-group">
+				Serviço
+				<select asp-items="@ViewBag.Servicos" asp-for="Servico" class="form-control" onchange="serviceChanged(value)"></select>
+			</div>
+			<div class="form-group">
+				<label asp-for="Cidade" class="control-label"></label>
+				<select asp-items="@ViewBag.Cidades" asp-for="Cidade" class="form-control"></select>
+				<span asp-validation-for="Cidade" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<input type="submit" value="Criar" class="btn btn-primary" />
+			</div>
+		</form>
+	</div>
+</div>
+
+<div>
+	<a asp-action="Index">Voltar</a>
+</div>
+
+@section Scripts {
+
+
+<script>
+	   function serviceChanged(value){
+		   var url = "/Equipes/Test";
+		   $.get(url, { servico: value });
+	   };
+
+	   $(function () {
+		   $("#multiSelectDropDown").chosen({
+			   width : "350px"
+		   });
+	   });
+</script>
+
+    @{
+	await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

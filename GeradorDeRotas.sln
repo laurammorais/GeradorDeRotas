@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeradorDeRotas", "GeradorDe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeitorDeArquivoExcel", "LeitorDeArquivoExcel\LeitorDeArquivoExcel.csproj", "{3ABC9BEA-A0B6-487F-BB20-C0F743EA3A11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{4F1062B6-31A5-4A58-89DC-8D5FA6A8C658}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{4F1062B6-31A5-4A58-89DC-8D5FA6A8C658}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
