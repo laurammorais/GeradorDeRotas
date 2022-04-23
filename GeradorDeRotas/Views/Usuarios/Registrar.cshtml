@@ -1,0 +1,52 @@
+﻿@model Models.Usuario
+
+@{
+	ViewData["Title"] = "Registrar";
+}
+<div style="text-align: center; margin-top: 80px">
+	<h2>Registrar-se</h2>
+
+	<div style="margin-top: 20px" class="row justify-content-md-center">
+		<div class="col-md-4">
+			<form asp-action="Registrar">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<div class="form-group">
+					Nome Completo
+					<input asp-for="Nome" class="form-control" />
+					<span asp-validation-for="Nome" class="text-danger"></span>
+				</div>
+				<div class="form-group">
+					Login
+					<input asp-for="Username" class="form-control" />
+					<span asp-validation-for="Username" class="text-danger"></span>
+				</div>
+				<div class="form-group">
+					<label asp-for="Senha" class="control-label"></label>
+					<input asp-for="Senha" type="password" class="form-control" />
+					<span asp-validation-for="Senha" class="text-danger"></span>
+				</div>
+				<div class="form-group">
+					<input type="submit" value="Registrar" class="btn btn-primary" />
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	@if(TempData["registroFalha"] != null){
+	<script src="~/js/registerFailed.js"></script>
+	}
+
+	@if(TempData["registroInvalido"] != null){
+	<script src="~/js/registerInvalid.js"></script>
+	}
+
+	@if(TempData["registroSucesso"] != null){
+	<script src="~/js/registerSuccess.js"></script>
+	}
+
+    @{
+	await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

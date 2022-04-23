@@ -1,5 +1,6 @@
 using GeradorDeRotas.Services;
 using GeradorDeRotas.Utils;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,11 +24,19 @@ namespace GeradorDeRotas
         {
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
+			{
+                opt.LoginPath = "/Usuarios/Login";
+                opt.AccessDeniedPath = "/Usuarios/Login";
+            });
+
             services.Configure<MongoSettings>(Configuration.GetSection(nameof(MongoSettings)));
             services.AddSingleton<IMongoSettings>(x => x.GetRequiredService<IOptions<MongoSettings>>().Value);
             services.AddSingleton<EquipeService>();
             services.AddSingleton<PessoaService>();
             services.AddSingleton<ExcelService>();
+            services.AddSingleton<SaveExcelService>();
+            services.AddSingleton<UsuarioService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +56,7 @@ namespace GeradorDeRotas
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

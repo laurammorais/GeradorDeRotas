@@ -1,0 +1,18 @@
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Models
+{
+    public class Usuario
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; private set; }
+        public string Nome { get; set; }
+        public string Username { get; set; }
+        public string Senha { get; set; }
+        public bool Valido => Nome != null && Username != null && Senha != null;
+
+        public bool LoginValido(Usuario login) => login != null && login.Username == Username && login.Senha == Senha;
+    }
+}

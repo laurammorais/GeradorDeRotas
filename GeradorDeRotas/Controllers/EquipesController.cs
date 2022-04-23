@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using GeradorDeRotas.Models;
+﻿using GeradorDeRotas.Models;
 using GeradorDeRotas.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -11,28 +11,33 @@ namespace GeradorDeRotas.Controllers
         private readonly EquipeService _equipeService;
         private readonly ExcelService _excelService;
         private readonly PessoaService _pessoaService;
+        private readonly SaveExcelService _saveExcelService;
         public EquipesController(
             EquipeService equipeService,
             ExcelService excelService,
-            PessoaService pessoaService)
+            PessoaService pessoaService,
+            SaveExcelService saveExcelService)
         {
             _equipeService = equipeService;
             _excelService = excelService;
             _pessoaService = pessoaService;
+            _saveExcelService = saveExcelService;
         }
 
         // GET: EquipesController
+        [Authorize]
         public ActionResult Index() => View(_equipeService.Get());
 
         // GET: EquipesController/Details/5
+        [Authorize]
         public ActionResult Details(string id) => View(_equipeService.Get(id));
 
         // GET: EquipesController/Create
-        public ActionResult Create([FromQuery] string servico = null)
+        [Authorize]
+        public ActionResult Create()
         {
             var pessoas = _pessoaService.GetDisponivel();
             ViewBag.Pessoas = new MultiSelectList(pessoas, "Cpf", "Nome");
-            pessoas.Remove(pessoas.Last());
             ViewBag.Servicos = new SelectList(_excelService.GetServicos());
 
             return View();
@@ -41,6 +46,7 @@ namespace GeradorDeRotas.Controllers
         // POST: EquipesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult Create(Equipe equipe)
         {
             try
@@ -62,6 +68,7 @@ namespace GeradorDeRotas.Controllers
         }
 
         // GET: EquipesController/Edit/5
+        [Authorize]
         public ActionResult Edit(string id)
         {
             var equipe = _equipeService.Get(id);
@@ -73,6 +80,7 @@ namespace GeradorDeRotas.Controllers
         // POST: EquipesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult Edit(string id, Equipe equipe)
         {
             try
@@ -87,42 +95,34 @@ namespace GeradorDeRotas.Controllers
             }
         }
 
-        // GET: EquipesController/Delete/5
-        public ActionResult Delete(string id)
-        {
-            var equipe = _equipeService.Get(id);
-            if (equipe == null)
-                return NotFound("Equipe não encontrada!");
-            return View(equipe);
-        }
-
         // POST: EquipesController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ConfirmDelete(string id)
+        [HttpDelete]
+        public ActionResult Delete(string id)
         {
             try
             {
+                var equipe = _equipeService.Get(id);
+                foreach (var pessoa in equipe.Pessoas)
+                {
+                    pessoa.Disponivel = true;
+                    _pessoaService.Update(pessoa.Id, pessoa);
+                }
+
                 _equipeService.Remove(id);
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return RedirectToAction(nameof(Index));
             }
         }
 
-        public ActionResult SelectServices()
-        {
-            ViewBag.Servicos = _excelService.GetServicos();
-            return View();
-        }
-
         [HttpGet]
-        public ActionResult Test([FromQuery] string servico)
+        public ActionResult ListarCidades(string servico)
         {
-            ViewBag.Cidades = new SelectList(_excelService.GetCidadesByServico(servico));
-            return RedirectToAction(nameof(Create), new { servico });
+            var cidades = _excelService.GetCidadesByServico(servico);
+
+            return Json(new { Cidades = cidades });
         }
     }
 }

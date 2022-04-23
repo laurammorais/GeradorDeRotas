@@ -11,11 +11,11 @@ namespace GeradorDeRotas.Services
         private readonly IMongoCollection<Excel> _excel;
         public ExcelService(IMongoSettings settings)
         {
-            var equipes = new MongoClient(settings.ConnectionString);
-            var database = equipes.GetDatabase(settings.DatabaseName);
+            var excel = new MongoClient(settings.ConnectionString);
+            var database = excel.GetDatabase(settings.DatabaseName);
             _excel = database.GetCollection<Excel>(settings.ExcelCollectionName);
         }
-        public IEnumerable<string> GetServicos() => _excel.Find(excel => true).FirstOrDefault().ArquivosExcel.Select(x => x.Servico);
+        public IEnumerable<string> GetServicos() => _excel.Find(excel => true).FirstOrDefault().ArquivosExcel.Select(x => x.Servico).Distinct();
         public IEnumerable<string> GetCidadesByServico(string servico) => _excel.Find(excel => true).FirstOrDefault().ArquivosExcel.Where(x => x.Servico == servico).Select(x => x.Cidade);
     }
 }

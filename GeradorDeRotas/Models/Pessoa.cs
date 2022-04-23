@@ -14,8 +14,6 @@ namespace GeradorDeRotas.Models
         [RegularExpression(@"^\S*$", ErrorMessage = "Campo obrigatório.")]
         public string Nome { get; set; }
 
-        [Required(ErrorMessage = "Campo obrigatório.")]
-        [RegularExpression(@"^\S*$", ErrorMessage = "Campo obrigatório.")]
         public string Cpf { get; set; }
 
         public bool Disponivel { get; set; } = true;

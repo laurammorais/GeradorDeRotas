@@ -3,12 +3,14 @@
 @{
 	ViewData["Title"] = "Index";
 }
+<div style="text-align: center">
+	<h2>Pessoas</h2>
 
-<h1>Pessoas</h1>
+	<p>
+		<a asp-action="Create">Criar nova pessoa</a>
+	</p>
+</div>
 
-<p>
-	<a asp-action="Create">Criar nova pessoa</a>
-</p>
 <table class="table">
 	<thead>
 		<tr>
@@ -31,12 +33,19 @@
 				<td>
 					@Html.DisplayFor(modelItem => item.Cpf)
 				</td>
-				<td>
+				<td style="color: #ff6f9c">
 					<a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
 					<a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
-					<a asp-action="Delete" asp-route-id="@item.Id">Deletar</a>
+					<button class="btn btn-primary" onclick="confirmDelete('@item.Id')">Deletar</button>
 				</td>
 			</tr>
 		}
 	</tbody>
 </table>
+
+@section Scripts {
+		<script src="~/js/deletePessoa.js"></script>
+    @{
+	await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
