@@ -117,12 +117,6 @@ namespace GeradorDeRotas.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult ListarCidades(string servico)
-        {
-            var cidades = _excelService.GetCidadesByServico(servico);
-
-            return Json(new { Cidades = cidades });
-        }
+       
     }
 }

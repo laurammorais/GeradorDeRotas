@@ -1,19 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using GeradorDeRotas.Models;
 using GeradorDeRotas.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Xceed.Words.NET;
 
 namespace GeradorDeRotas.Controllers
 {
     public class WordController : Controller
     {
         private readonly SaveExcelService _saveExcelService;
-        public WordController(SaveExcelService saveExcelService)
+        private readonly EquipeService _equipeService;
+        private readonly ExcelService _excelService;
+        public WordController(
+            SaveExcelService saveExcelService,
+            EquipeService equipeService,
+             ExcelService excelService)
         {
             _saveExcelService = saveExcelService;
+            _equipeService = equipeService;
+            _excelService = excelService;
         }
 
         [Authorize]
@@ -23,15 +34,13 @@ namespace GeradorDeRotas.Controllers
 
             var excel = _saveExcelService.Get();
 
-            foreach (var linhaExcel in excel.ArquivosExcel)
-            {
-                foreach (var item in linhaExcel)
-                {
-                    rotas.Add(item.Name);
-                }
-            }
+            foreach (var item in excel.ArquivosExcel.First())
+                rotas.Add(item.Name);
+
+            rotas.RemoveAll(x => x == "CONTRATO" || x == "ASSINANTE" || x == "ENDEREÇO" || x == "CEP" || x == "OS" || x == "TIPO OS");
 
             ViewBag.Rotas = new SelectList(rotas);
+            ViewBag.Servicos = new SelectList(_excelService.GetServicos());
             return View();
         }
 
@@ -43,13 +52,55 @@ namespace GeradorDeRotas.Controllers
         {
             try
             {
-                if (!word.Rotas.Any())
+                var stream = new MemoryStream();
+                var doc = DocX.Create(stream);
+
+                var paragrafo = doc.InsertParagraph();
+                paragrafo.Append($"ROTA TRABALHO - {DateTime.Now:d}").Font("Times New Roman").FontSize(18).Bold().Alignment = Xceed.Document.NET.Alignment.center;
+
+                paragrafo = doc.InsertParagraph();
+                paragrafo.Append("RETORNOS").Font("Times New Roman").FontSize(15).Bold().Alignment = Xceed.Document.NET.Alignment.center;
+
+                var equipes = _equipeService.Get();
+                var excel = _saveExcelService.Get();
+
+                if (word.Servico != null)
+                    equipes = equipes.FindAll(x => x.Servico == word.Servico);
+
+                if (word.Cidade != null)
+                    equipes = equipes.FindAll(x => x.Cidade == word.Cidade);
+
+                foreach (var equipe in equipes)
                 {
-                    TempData["rotasInvalidas"] = "Nenhuma rota selecionada!";
-                    return RedirectToAction(nameof(Export));
+                    var dadosEquipe = excel.ArquivosExcel.Find(x => x.GetValue("CIDADE") == equipe.Cidade && x.GetValue("SERVIÇO") == equipe.Servico);
+
+                    paragrafo = doc.InsertParagraph();
+                    paragrafo = doc.InsertParagraph();
+                    paragrafo = doc.InsertParagraph();
+                    paragrafo = doc.InsertParagraph();
+                    paragrafo.Append($"Nome da Equipe: {equipe.NomeEquipe}").Font("Times New Roman").FontSize(15).Bold();
+
+                    paragrafo = doc.InsertParagraph();
+                    paragrafo = doc.InsertParagraph();
+                    paragrafo.Append($"Contrato: {dadosEquipe.GetValue("CONTRATO")}  -  Assinante: {dadosEquipe.GetValue("ASSINANTE")}  -  Período: ajustar").Font("Times New Roman").FontSize(14).Bold().UnderlineStyle(Xceed.Document.NET.UnderlineStyle.singleLine);
+
+                    paragrafo = doc.InsertParagraph();
+                    paragrafo.Append($"Endereço: {dadosEquipe.GetValue("ENDEREÇO")} - {dadosEquipe.GetValue("CEP")}").Font("Times New Roman").FontSize(14);
+
+                    paragrafo = doc.InsertParagraph();
+                    paragrafo.Append($"O.S: {dadosEquipe.GetValue("OS")}  -  ").Font("Times New Roman").FontSize(14);
+                    paragrafo.Append($"TIPO O.S: {dadosEquipe.GetValue("TIPO OS")}").Font("Times New Roman").FontSize(14).Color(Color.White).Highlight(Xceed.Document.NET.Highlight.red);
+
+                    foreach (var rota in word.Rotas)
+                    {
+                        paragrafo = doc.InsertParagraph();
+                        paragrafo.Append($"{rota[0] + rota[1..].ToLower()}: {dadosEquipe.GetValue(rota)}").Font("Times New Roman").FontSize(14);
+                    }
                 }
 
-                return RedirectToAction(nameof(Export));
+                doc.Save();
+
+                return File(stream.ToArray(), "application/octet-stream", "Rotas.docx");
             }
             catch
             {

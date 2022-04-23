@@ -13,16 +13,19 @@
 
   <ItemGroup>
     <Content Remove="Views\Equipes\Delete.cshtml" />
+    <Content Remove="wwwroot\js\exportFailed.js" />
     <Content Remove="wwwroot\js\tsconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
 	  <PackageReference Include="ClosedXML" Version="0.95.4" />
+	  <PackageReference Include="DocX" Version="2.1.0" />
 	  <PackageReference Include="EPPlus" Version="6.0.3" />
 	  <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.15" />
 	  <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="MongoDB.Bson" Version="2.15.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
+    <PackageReference Include="Syncfusion.DocIO.AspNet.Mvc5" Version="20.1.0.50" />
   </ItemGroup>
 
   <ItemGroup>

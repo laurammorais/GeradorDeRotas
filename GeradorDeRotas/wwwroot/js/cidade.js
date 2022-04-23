@@ -8,7 +8,7 @@
 })
 
 function ListarCidades(value) {
-    var url = "/Equipes/ListarCidades";
+    var url = "/Cidades/FiltrarPorServico";
     var data = { servico: value };
 
     $("#Cidade").empty();

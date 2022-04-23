@@ -1,15 +1,29 @@
-﻿@{
+﻿@model GeradorDeRotas.Models.Word
+
+@{
 	ViewData["Title"] = "Export";
 }
 
-<h2 style="text-align:center; margin:150px 0 30px 0">Exportar Arquivo Word</h2>
+<h2 style="text-align:center; margin:100px 0 30px 0">Exportar Arquivo Word</h2>
 
-<div class="row">
-	<div class="col-md-12" style="text-align:center">
+<div class="row justify-content-md-center">
+	<div class="col-md-4" style="text-align:center">
 		<form asp-action="Export">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 			<div class="form-group">
+				<label class="control-label">Rotas</label>
 				@Html.ListBox("Rotas", ViewBag.Rotas, new { @class = "form-control", id = "multiSelectDropDown", multiple = "multiple" })
+			</div>
+			<div class="form-group">
+				Serviço
+				@Html.DropDownListFor(model => model.Servico, ViewBag.Servicos as SelectList, "Selecione...", new{ @class = "form-control" })
+			</div>
+			<div class="form-group">
+				<label asp-for="Cidade" class="control-label"></label>
+				<select asp-for="Cidade" id="Cidade" class="form-control">
+					<option value="">Selecione um serviço primeiro...</option>
+				</select>
+				<span asp-validation-for="Cidade" class="text-danger"></span>
 			</div>
 			<div class="form-group">
 				<input type="submit" value="Exportar" class="btn btn-primary" />
@@ -20,10 +34,7 @@
 
 @section Scripts {
 
-	@if(TempData["rotasInvalidas"] != null){
-		<script src="~/js/exportFailed.js"></script>
-	}
-
+<script src="~/js/cidade.js"></script>
     @{
 	await Html.RenderPartialAsync("_ValidationScriptsPartial");
 }

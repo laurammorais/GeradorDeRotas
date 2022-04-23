@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using GeradorDeRotas.Models;
 using GeradorDeRotas.Utils;
 using MongoDB.Driver;
@@ -18,6 +19,8 @@ namespace GeradorDeRotas.Services
         public List<Equipe> Get() => _equipes.Find(equipe => true).ToList();
 
         public Equipe Get(string id) => _equipes.Find(equipe => equipe.Id == id).FirstOrDefault();
+
+        public Equipe GetByCpf(string cpf) => Get().FirstOrDefault(x => x.Pessoas.Any(x => x.Cpf == cpf));
 
         public void Create(Equipe equipe) => _equipes.InsertOne(equipe);
 

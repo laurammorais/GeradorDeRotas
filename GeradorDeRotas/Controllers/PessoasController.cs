@@ -9,9 +9,11 @@ namespace GeradorDeRotas.Controllers
     public class PessoasController : Controller
     {
         private readonly PessoaService _pessoaService;
-        public PessoasController(PessoaService pessoaService)
+        private readonly EquipeService _equipeService;
+        public PessoasController(PessoaService pessoaService, EquipeService equipeService)
         {
             _pessoaService = pessoaService;
+            _equipeService = equipeService;
         }
 
         // GET: PessoasController
@@ -73,6 +75,15 @@ namespace GeradorDeRotas.Controllers
         {
             try
             {
+                var equipe = _equipeService.GetByCpf(pessoa.Cpf);
+                if (equipe != null)
+                {
+                    equipe.Pessoas.RemoveAll(x => x.Cpf == pessoa.Cpf);
+                    pessoa.Disponivel = false;
+                    equipe.Pessoas.Add(pessoa);
+                    _equipeService.Update(equipe.Id, equipe);
+                }
+
                 if (!CpfValidator.CpfValido(pessoa.Cpf))
                 {
                     TempData["cpfInvalido"] = "CPF inválido!";

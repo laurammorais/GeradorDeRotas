@@ -20,9 +20,13 @@
 			});
 
 			Swal.fire(
-				'Removido!',
-				'A pessoa foi deletada.',
-				'success'
+				{
+					title: 'Removido!',
+					text: 'A pessoa foi deletada.',
+					icon: 'success',
+					timer: 2000,
+					showConfirmButton: false,
+				}
 			).then(() => location.href = location.href)
 		}
 	})
