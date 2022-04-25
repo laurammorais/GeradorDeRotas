@@ -1,4 +1,5 @@
-﻿using GeradorDeRotas.Models;
+﻿using System.Threading.Tasks;
+using GeradorDeRotas.Models;
 using GeradorDeRotas.Services;
 using GeradorDeRotas.Validators;
 using Microsoft.AspNetCore.Authorization;
@@ -18,11 +19,11 @@ namespace GeradorDeRotas.Controllers
 
         // GET: PessoasController
         [Authorize]
-        public ActionResult Index() => View(_pessoaService.Get());
+        public async Task<ActionResult> Index() => View(await _pessoaService.Get());
 
         // GET: PessoasController/Details/5
         [Authorize]
-        public ActionResult Details(string id) => View(_pessoaService.Get(id));
+        public async Task<ActionResult> Details(string id) => View(await _pessoaService.Get(id));
 
         // GET: PessoasController/Create
         [Authorize]
@@ -32,23 +33,32 @@ namespace GeradorDeRotas.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult Create(Pessoa pessoa)
+        public async Task<ActionResult> Create(Pessoa pessoa)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(pessoa.Cpf) || !CpfValidator.CpfValido(pessoa.Cpf))
+                if (!pessoa.Valido)
+                {
+                    TempData["camposObrigatorios"] = "Campo Obrigatorio!";
+                    return View();
+                }
+
+                if (!CpfValidator.CpfValido(pessoa.Cpf))
                 {
                     TempData["cpfInvalido"] = "CPF inválido!";
                     return View();
                 }
 
-                if (_pessoaService.GetByCpf(pessoa.Cpf) != null)
+                if (await _pessoaService.GetByCpf(pessoa.Cpf) != null)
                 {
                     TempData["cpfCadastrado"] = "CPF já cadastrado!";
                     return View();
                 }
 
-                _pessoaService.Create(pessoa);
+                TempData["pessoaSuccess"] = "Pessoa criada com sucesso!";
+
+
+                await _pessoaService.Create(pessoa);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -59,9 +69,9 @@ namespace GeradorDeRotas.Controllers
 
         // GET: PessoasController/Edit/5
         [Authorize]
-        public ActionResult Edit(string id)
+        public async Task<ActionResult> Edit(string id)
         {
-            var pessoa = _pessoaService.Get(id);
+            var pessoa = await _pessoaService.Get(id);
             if (pessoa == null)
                 return NotFound("Pessoa não encontrada!");
             return View(pessoa);
@@ -71,17 +81,17 @@ namespace GeradorDeRotas.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult Edit(string id, Pessoa pessoa)
+        public async Task<ActionResult> Edit(string id, Pessoa pessoa)
         {
             try
             {
-                var equipe = _equipeService.GetByCpf(pessoa.Cpf);
+                var equipe = await _equipeService.GetByCpf(pessoa.Cpf);
                 if (equipe != null)
                 {
                     equipe.Pessoas.RemoveAll(x => x.Cpf == pessoa.Cpf);
                     pessoa.Disponivel = false;
                     equipe.Pessoas.Add(pessoa);
-                    _equipeService.Update(equipe.Id, equipe);
+                    await _equipeService.Update(equipe.Id, equipe);
                 }
 
                 if (!CpfValidator.CpfValido(pessoa.Cpf))
@@ -91,7 +101,7 @@ namespace GeradorDeRotas.Controllers
                 }
 
                 pessoa.SetId(id);
-                _pessoaService.Update(id, pessoa);
+                await _pessoaService.Update(id, pessoa);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -102,11 +112,11 @@ namespace GeradorDeRotas.Controllers
 
         [HttpDelete]
         [Authorize]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
             try
             {
-                _pessoaService.Remove(id);
+                await _pessoaService.Remove(id);
                 return RedirectToAction(nameof(Index));
             }
             catch

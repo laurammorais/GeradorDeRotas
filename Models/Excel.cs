@@ -9,6 +9,6 @@ namespace Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; private set; } = ObjectId.GenerateNewId().ToString();
-        public List<ArquivoExcel> ArquivosExcel { get; set; } = new List<ArquivoExcel>();
+        public List<BsonDocument> ArquivosExcel { get; set; } = new List<BsonDocument>();
     }
 }

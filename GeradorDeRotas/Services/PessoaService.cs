@@ -1,32 +1,116 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using GeradorDeRotas.Models;
-using GeradorDeRotas.Utils;
-using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace GeradorDeRotas.Services
 {
     public class PessoaService
     {
-        private readonly IMongoCollection<Pessoa> _pessoa;
-        public PessoaService(IMongoSettings settings)
+        private readonly HttpClient httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:44327/api/pessoas/") };
+
+        public async Task<List<Pessoa>> Get()
         {
-            var pessoa = new MongoClient(settings.ConnectionString);
-            var database = pessoa.GetDatabase(settings.DatabaseName);
-            _pessoa = database.GetCollection<Pessoa>(settings.PessoaCollectionName);
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync("");
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var pessoaString = await response.Content.ReadAsStringAsync();
+            var usuarios = JsonConvert.DeserializeObject<List<Pessoa>>(pessoaString);
+
+            return usuarios;
         }
 
-        public List<Pessoa> Get() => _pessoa.Find(pessoa => true).ToList();
+        public async Task<List<Pessoa>> GetDisponivel()
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
 
-        public List<Pessoa> GetDisponivel() => _pessoa.Find(pessoa => pessoa.Disponivel).ToList();
+            var response = await httpClient.GetAsync("Disponivel");
 
-        public Pessoa Get(string id) => _pessoa.Find(pessoa => pessoa.Id == id).FirstOrDefault();
+            if (!response.IsSuccessStatusCode)
+                return null;
 
-        public Pessoa GetByCpf(string cpf) => _pessoa.Find(pessoa => pessoa.Cpf == cpf).FirstOrDefault();
+            var pessoaString = await response.Content.ReadAsStringAsync();
+            var usuarios = JsonConvert.DeserializeObject<List<Pessoa>>(pessoaString);
 
-        public void Create(Pessoa pessoa) => _pessoa.InsertOne(pessoa);
+            return usuarios;
+        }
 
-        public void Update(string id, Pessoa pessoa) => _pessoa.ReplaceOne(x => x.Id == id, pessoa);
+        public async Task<Pessoa> GetByCpf(string cpf)
+        {
 
-        public void Remove(string id) => _pessoa.DeleteOne(pessoa => pessoa.Id == id);
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"Cpf/{cpf}");
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var usuarioString = await response.Content.ReadAsStringAsync();
+            var usuario = JsonConvert.DeserializeObject<Pessoa>(usuarioString);
+
+            return usuario;
+        }
+
+        public async Task<Pessoa> Get(string id)
+        {
+
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync(id);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var usuarioString = await response.Content.ReadAsStringAsync();
+            var usuario = JsonConvert.DeserializeObject<Pessoa>(usuarioString);
+
+            return usuario;
+        }
+
+        public async Task<bool> Create(Pessoa pessoa)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.PostAsJsonAsync("", pessoa);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> Update(string id, Pessoa pessoa)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.PutAsJsonAsync(id, pessoa);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> Remove(string id)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.DeleteAsync(id);
+            return response.IsSuccessStatusCode;
+        }
     }
 }

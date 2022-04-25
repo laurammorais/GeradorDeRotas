@@ -8,7 +8,7 @@ namespace GeradorDeRotas.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; private set; } = ObjectId.GenerateNewId().ToString();
+        public string Id { get; set; }
         public string NomeEquipe { get; set; }
         public List<Pessoa> Pessoas { get; set; } = new List<Pessoa>();
         [BsonIgnore]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using GeradorDeRotas.Models;
 using GeradorDeRotas.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -14,13 +15,13 @@ namespace GeradorDeRotas.Controllers
 {
     public class WordController : Controller
     {
-        private readonly SaveExcelService _saveExcelService;
+        private readonly ExcelService _saveExcelService;
         private readonly EquipeService _equipeService;
         private readonly ExcelService _excelService;
         public WordController(
-            SaveExcelService saveExcelService,
+            ExcelService saveExcelService,
             EquipeService equipeService,
-             ExcelService excelService)
+            ExcelService excelService)
         {
             _saveExcelService = saveExcelService;
             _equipeService = equipeService;
@@ -40,7 +41,8 @@ namespace GeradorDeRotas.Controllers
             rotas.RemoveAll(x => x == "CONTRATO" || x == "ASSINANTE" || x == "ENDEREÇO" || x == "CEP" || x == "OS" || x == "TIPO OS");
 
             ViewBag.Rotas = new SelectList(rotas);
-            ViewBag.Servicos = new SelectList(_excelService.GetServicos());
+            ViewBag.Servicos = new SelectList(_saveExcelService.GetServicos());
+            ViewBag.Cidades = new SelectList(_excelService.GetCidades());
             return View();
         }
 
@@ -48,7 +50,7 @@ namespace GeradorDeRotas.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult Export(Word word)
+        public async Task<ActionResult> Export(Word word)
         {
             try
             {
@@ -61,14 +63,20 @@ namespace GeradorDeRotas.Controllers
                 paragrafo = doc.InsertParagraph();
                 paragrafo.Append("RETORNOS").Font("Times New Roman").FontSize(15).Bold().Alignment = Xceed.Document.NET.Alignment.center;
 
-                var equipes = _equipeService.Get();
+                var equipes = await _equipeService.Get();
                 var excel = _saveExcelService.Get();
 
                 if (word.Servico != null)
-                    equipes = equipes.FindAll(x => x.Servico == word.Servico);
+                    equipes =  equipes.FindAll(x => x.Servico == word.Servico);
 
                 if (word.Cidade != null)
                     equipes = equipes.FindAll(x => x.Cidade == word.Cidade);
+
+                if (!equipes.Any())
+                {
+                    TempData["semEquipe"] = "Nenhuma equipe encontrada com este filtro!";
+                    return RedirectToAction(nameof(Export));
+                }
 
                 foreach (var equipe in equipes)
                 {
@@ -82,7 +90,7 @@ namespace GeradorDeRotas.Controllers
 
                     paragrafo = doc.InsertParagraph();
                     paragrafo = doc.InsertParagraph();
-                    paragrafo.Append($"Contrato: {dadosEquipe.GetValue("CONTRATO")}  -  Assinante: {dadosEquipe.GetValue("ASSINANTE")}  -  Período: ajustar").Font("Times New Roman").FontSize(14).Bold().UnderlineStyle(Xceed.Document.NET.UnderlineStyle.singleLine);
+                    paragrafo.Append($"Contrato: {dadosEquipe.GetValue("CONTRATO")}  -  Assinante: {dadosEquipe.GetValue("ASSINANTE")}  -  Período: ").Font("Times New Roman").FontSize(14).Bold().UnderlineStyle(Xceed.Document.NET.UnderlineStyle.singleLine);
 
                     paragrafo = doc.InsertParagraph();
                     paragrafo.Append($"Endereço: {dadosEquipe.GetValue("ENDEREÇO")} - {dadosEquipe.GetValue("CEP")}").Font("Times New Roman").FontSize(14);

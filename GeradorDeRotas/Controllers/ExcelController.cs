@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
 using GeradorDeRotas.Services;
@@ -15,11 +16,11 @@ namespace GeradorDeRotas.Controllers
 {
     public class ExcelController : Controller
     {
-        private readonly SaveExcelService _testeService;
-
-        public ExcelController(SaveExcelService testeService)
+        private readonly ExcelService _excelService;
+        private readonly string[] _extensoesPermitidas = { ".xlsx", ".xls" };
+        public ExcelController(ExcelService testeService)
         {
-            _testeService = testeService;
+            _excelService = testeService;
         }
 
         [HttpPost]
@@ -28,7 +29,7 @@ namespace GeradorDeRotas.Controllers
         {
             var files = HttpContext.Request.Form.Files;
 
-            if (!files.Any())
+            if (!files.Any() || !_extensoesPermitidas.Contains(Path.GetExtension(files[0].FileName).ToLowerInvariant()))
             {
                 TempData["arquivoInvalido"] = "Nenhum arquivo selecionado!";
                 return RedirectToAction(nameof(Upload));
@@ -73,7 +74,7 @@ namespace GeradorDeRotas.Controllers
             dt.DefaultView.Sort = "cep ASC";
             dt = dt.DefaultView.ToTable();
 
-            var saveExcel = new SaveExcel();
+            var saveExcel = new Excel();
 
             for (int i = 1; i < dt.Rows.Count - 1; i++)
             {
@@ -89,8 +90,8 @@ namespace GeradorDeRotas.Controllers
                 saveExcel.ArquivosExcel.Add(document);
             }
 
-            _testeService.Remove();
-            _testeService.Create(saveExcel);
+            _excelService.Remove();
+            _excelService.Create(saveExcel);
 
             TempData["arquivoSucesso"] = "Sucesso";
 

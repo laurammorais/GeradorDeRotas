@@ -35,7 +35,7 @@ namespace GeradorDeRotas
             services.AddSingleton<EquipeService>();
             services.AddSingleton<PessoaService>();
             services.AddSingleton<ExcelService>();
-            services.AddSingleton<SaveExcelService>();
+            services.AddSingleton<ExcelService>();
             services.AddSingleton<UsuarioService>();
         }
 

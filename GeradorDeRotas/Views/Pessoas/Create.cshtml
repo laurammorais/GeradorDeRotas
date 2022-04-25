@@ -19,8 +19,6 @@
 					<label class="control-label">CPF</label>
 					<input autocomplete="off" id="cpf" asp-for="Cpf" class="form-control" style="" />
 					<span asp-validation-for="Cpf" class="text-danger"></span>
-					<span class="text-danger">@TempData["cpfInvalido"]</span>
-					<span class="text-danger">@TempData["cpfCadastrado"]</span>
 				</div>
 				<a asp-action="Index" style="margin-right:20px">Voltar</a>
 				<input type="submit" value="Criar" class="btn btn-primary" />
@@ -32,6 +30,23 @@
 @section Scripts {
 
 	<script src="~/js/cpf.js"></script>
+
+	@if(TempData["cpfInvalido"] != null){
+	<script src="~/js/cpfInvalido.js"></script>
+
+	}
+
+	@if(TempData["cpfCadastrado"] != null){
+	<script src="~/js/cpfCadastrado.js"></script>
+	}
+
+	@if(TempData["camposObrigatorios"] != null){
+	<script src="~/js/camposObrigatorios.js"></script>
+	}
+
+	@if(TempData["pessoaSucesso"] != null){
+		<script src="~/js/pessoaSuccess.js"></script>
+	}
 
     @{
 	await Html.RenderPartialAsync("_ValidationScriptsPartial");

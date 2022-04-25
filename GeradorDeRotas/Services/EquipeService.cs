@@ -1,31 +1,95 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using GeradorDeRotas.Models;
-using GeradorDeRotas.Utils;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace GeradorDeRotas.Services
 {
     public class EquipeService
     {
-        private readonly IMongoCollection<Equipe> _equipes;
-        public EquipeService(IMongoSettings settings)
+        private readonly HttpClient httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:44387/api/equipes/") };
+
+        public async Task<List<Equipe>> Get()
         {
-            var equipes = new MongoClient(settings.ConnectionString);
-            var database = equipes.GetDatabase(settings.DatabaseName);
-            _equipes = database.GetCollection<Equipe>(settings.EquipeCollectionName);
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync("");
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var equipeString = await response.Content.ReadAsStringAsync();
+            var equipes = JsonConvert.DeserializeObject<List<Equipe>>(equipeString);
+
+            return equipes;
         }
 
-        public List<Equipe> Get() => _equipes.Find(equipe => true).ToList();
+        public async Task<Equipe> Get(string id)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
 
-        public Equipe Get(string id) => _equipes.Find(equipe => equipe.Id == id).FirstOrDefault();
+            var response = await httpClient.GetAsync(id);
 
-        public Equipe GetByCpf(string cpf) => Get().FirstOrDefault(x => x.Pessoas.Any(x => x.Cpf == cpf));
+            if (!response.IsSuccessStatusCode)
+                return null;
 
-        public void Create(Equipe equipe) => _equipes.InsertOne(equipe);
+            var equipeString = await response.Content.ReadAsStringAsync();
+            var equipe = JsonConvert.DeserializeObject<Equipe>(equipeString);
 
-        public void Update(string id, Equipe equipe) => _equipes.ReplaceOne(x => x.Id == id, equipe);
+            return equipe;
+        }
 
-        public void Remove(string id) => _equipes.DeleteOne(equipe => equipe.Id == id);
+        public async Task<Equipe> GetByCpf(string cpf)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"Cpf/{cpf}");
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var equipeString = await response.Content.ReadAsStringAsync();
+            var equipe = JsonConvert.DeserializeObject<Equipe>(equipeString);
+
+            return equipe;
+        }
+
+        public async Task Create(Equipe equipe)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            await httpClient.PostAsJsonAsync("", equipe);
+        }
+
+        public async Task Update(string id, Equipe equipe)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            await httpClient.PutAsJsonAsync(id, equipe);
+        }
+
+        public async Task Remove(string id)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            await httpClient.DeleteAsync(id);
+        }
     }
 }

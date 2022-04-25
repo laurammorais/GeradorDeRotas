@@ -1,16 +1,14 @@
 ﻿$(document).ready(function () {
     $("#Servico").change(function () {
         var value = $("#Servico option:selected").val();
-        if (value !== "" || value !== undefined) {
-            ListarCidades(value)
-        }
+        ListarCidades(value)
     });
 })
 
 function ListarCidades(value) {
-    var url = "/Cidades/FiltrarPorServico";
+    var url = "/Select/FiltrarCidadesPorServico";
     var data = { servico: value };
-
+    console.log("listar cidades")
     $("#Cidade").empty();
 
     $.ajax({

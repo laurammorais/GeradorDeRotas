@@ -5,11 +5,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Utils\**" />
+    <Content Remove="Utils\**" />
+    <EmbeddedResource Remove="Utils\**" />
+    <None Remove="Utils\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Utils\IMongoSettings.cs" />
+    <Compile Include="Utils\MongoSettings.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\GeradorDeRotas\GeradorDeRotas.csproj" />
   </ItemGroup>
 
 </Project>

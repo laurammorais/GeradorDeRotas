@@ -2,6 +2,7 @@
 
 @{
 	ViewData["Title"] = "Export";
+
 }
 
 <h2 style="text-align:center; margin:100px 0 30px 0">Exportar Arquivo Word</h2>
@@ -20,9 +21,11 @@
 			</div>
 			<div class="form-group">
 				<label asp-for="Cidade" class="control-label"></label>
-				<select asp-for="Cidade" id="Cidade" class="form-control">
+					@Html.DropDownListFor(model => model.Cidade, ViewBag.Cidades as SelectList, "Selecione...", new{ @class = "form-control" })
+
+				@*<select asp-for="Cidade" id="Cidade" class="form-control">
 					<option value="">Selecione um serviço primeiro...</option>
-				</select>
+				</select>*@
 				<span asp-validation-for="Cidade" class="text-danger"></span>
 			</div>
 			<div class="form-group">
@@ -33,6 +36,10 @@
 </div>
 
 @section Scripts {
+	@if(TempData["semEquipe"] != null){
+		<script src="~/js/exportInvalidTeam.js"></script>
+	}
+@*<script src="~/js/exportSuccess.js"></script>*@
 
 <script src="~/js/cidade.js"></script>
     @{

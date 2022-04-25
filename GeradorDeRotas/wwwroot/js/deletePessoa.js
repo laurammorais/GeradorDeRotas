@@ -11,7 +11,7 @@
 		if (result.isConfirmed) {
 			const url = "/Pessoas/Delete";
 			const data = { id: id };
-
+			console.log(id);
 			$.ajax({
 				url: url,
 				type: "DELETE",
