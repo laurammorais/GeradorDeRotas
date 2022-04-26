@@ -8,7 +8,7 @@ using Models;
 namespace EquipesApi.Controllers
 {
 
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class EquipesController : ControllerBase
     {
@@ -21,6 +21,10 @@ namespace EquipesApi.Controllers
         // GET: api/<PessoasController>
         [HttpGet]
         public ActionResult<List<Equipe>> GetAll() => _equipeService.Get();
+
+        [HttpGet]
+        [Route("Disponivel")]
+        public ActionResult<List<Equipe>> GetDisponivel() => _equipeService.GetDisponivel();
 
         // GET api/<PessoasController>/5
         [HttpGet("{id}")]

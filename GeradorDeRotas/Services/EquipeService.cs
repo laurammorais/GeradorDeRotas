@@ -30,6 +30,23 @@ namespace GeradorDeRotas.Services
             return equipes;
         }
 
+        public async Task<List<Equipe>> GetDisponivel()
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync("Disponivel");
+
+            if (!response.IsSuccessStatusCode)
+                return new List<Equipe>();
+
+            var equipeString = await response.Content.ReadAsStringAsync();
+            var equipes = JsonConvert.DeserializeObject<List<Equipe>>(equipeString);
+
+            return equipes;
+        }
+
         public async Task<Equipe> Get(string id)
         {
             httpClient.DefaultRequestHeaders.Accept.Clear();

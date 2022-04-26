@@ -36,7 +36,7 @@ namespace GeradorDeRotas.Controllers
             }
 
             var xls = new XLWorkbook(files[0].OpenReadStream());
-            var planilha = xls.Worksheets.First(w => w.Name == "Planilha1");
+            var planilha = xls.Worksheets.First();
 
             var columns = new List<string>();
             var qtdColumns = planilha.Columns().Count();
@@ -74,7 +74,7 @@ namespace GeradorDeRotas.Controllers
             dt.DefaultView.Sort = "cep ASC";
             dt = dt.DefaultView.ToTable();
 
-            var saveExcel = new Excel();
+            var excel = new Excel();
 
             for (int i = 1; i < dt.Rows.Count - 1; i++)
             {
@@ -87,11 +87,11 @@ namespace GeradorDeRotas.Controllers
                 }
                 var json = JsonConvert.SerializeObject(dictionary);
                 var document = BsonSerializer.Deserialize<BsonDocument>(json);
-                saveExcel.ArquivosExcel.Add(document);
+                excel.ArquivosExcel.Add(document);
             }
 
             _excelService.Remove();
-            _excelService.Create(saveExcel);
+            _excelService.Create(excel);
 
             TempData["arquivoSucesso"] = "Sucesso";
 

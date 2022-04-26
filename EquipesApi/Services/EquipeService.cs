@@ -18,6 +18,8 @@ namespace EquipesApi.Services
 
         public List<Equipe> Get() => _equipe.Find(equipe => true).ToList();
 
+        public List<Equipe> GetDisponivel() => _equipe.Find(equipe => equipe.Disponivel).ToList();
+
         public Equipe Get(string id) => _equipe.Find(equipe => equipe.Id == id).FirstOrDefault();
 
         public Equipe GetByCpf(string cpf) => Get().FirstOrDefault(x => x.Pessoas.Any(x => x.Cpf == cpf));

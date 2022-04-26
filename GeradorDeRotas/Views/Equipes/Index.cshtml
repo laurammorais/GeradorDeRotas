@@ -20,9 +20,6 @@
 			<th>
 				@Html.DisplayNameFor(model => model.Cidade)
 			</th>
-			<th>
-				Serviço
-			</th>
 			<th></th>
 		</tr>
 	</thead>
@@ -36,13 +33,10 @@
 				<td>
 					@Html.DisplayFor(modelItem => item.Cidade)
 				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Servico)
-				</td>
 				<td style="color: #ff6f9c">
 					<a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
 					<a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
-					
+
 					<button class="btn btn-primary" onclick="confirmDelete('@item.Id')">Deletar</button>
 				</td>
 			</tr>

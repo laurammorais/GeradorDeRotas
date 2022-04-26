@@ -7,22 +7,19 @@ using Models;
 
 namespace GeradorDeRotas.Controllers
 {
-	public class EquipesController : Controller
+    public class EquipesController : Controller
     {
         private readonly EquipeService _equipeService;
-        private readonly ExcelService _excelService;
         private readonly PessoaService _pessoaService;
-        private readonly ExcelService _saveExcelService;
+        private readonly ExcelService _excelService;
         public EquipesController(
             EquipeService equipeService,
-            ExcelService excelService,
             PessoaService pessoaService,
-            ExcelService saveExcelService)
+            ExcelService excelService)
         {
             _equipeService = equipeService;
-            _excelService = excelService;
             _pessoaService = pessoaService;
-            _saveExcelService = saveExcelService;
+            _excelService = excelService;
         }
 
         // GET: EquipesController
@@ -39,7 +36,7 @@ namespace GeradorDeRotas.Controllers
         {
             var pessoas = await _pessoaService.GetDisponivel();
             ViewBag.Pessoas = new MultiSelectList(pessoas, "Cpf", "Nome");
-            ViewBag.Servicos = new SelectList(_saveExcelService.GetServicos());
+            ViewBag.Cidades = new SelectList(_excelService.GetCidades());
 
             return View();
         }

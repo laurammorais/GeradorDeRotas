@@ -11,8 +11,8 @@ namespace GeradorDeRotas.Services
         private readonly IMongoCollection<Excel> _excelService;
         public ExcelService(IMongoSettings settings)
         {
-            var saveExcel = new MongoClient(settings.ConnectionString);
-            var database = saveExcel.GetDatabase(settings.DatabaseName);
+            var excel = new MongoClient(settings.ConnectionString);
+            var database = excel.GetDatabase(settings.DatabaseName);
             _excelService = database.GetCollection<Excel>(settings.ExcelCollectionName);
         }
 
@@ -21,7 +21,7 @@ namespace GeradorDeRotas.Services
         public void Remove() => _excelService.DeleteOne(x => true);
         public IEnumerable<string> GetServicos() => _excelService.Find(excel => true).FirstOrDefault().ArquivosExcel.Select(x => x.GetValue("SERVIÇO").ToString()).Distinct();
         public IEnumerable<string> GetCidades() => _excelService.Find(excel => true).FirstOrDefault().ArquivosExcel.Select(x => x.GetValue("CIDADE").ToString()).Distinct();
-        public IEnumerable<string> GetCidadesByServico(string servico) => _excelService.Find(excel => true).FirstOrDefault().ArquivosExcel.Where(x => x.GetValue("SERVIÇO").ToString() == servico).Select(x => x.GetValue("CIDADE").ToString());
-        public IEnumerable<string> GetServicosByCidade(string cidade) => _excelService.Find(excel => true).FirstOrDefault().ArquivosExcel.Where(x => x.GetValue("CIDADE").ToString() == cidade).Select(x => x.GetValue("SERVIÇO").ToString());
+        public IEnumerable<string> GetCidadesByServico(string servico) => _excelService.Find(excel => true).FirstOrDefault().ArquivosExcel.Where(x => x.GetValue("SERVIÇO").ToString() == servico).Select(x => x.GetValue("CIDADE").ToString()).Distinct();
+        public IEnumerable<string> GetServicosByCidade(string cidade) => _excelService.Find(excel => true).FirstOrDefault().ArquivosExcel.Where(x => x.GetValue("CIDADE").ToString() == cidade).Select(x => x.GetValue("SERVIÇO").ToString()).Distinct();
     }
 }

@@ -22,12 +22,6 @@
 				@Html.DisplayFor(model => model.Cidade)
 			</dd>
 			<dt class="col-sm-6" style="text-align:right">
-				@Html.DisplayNameFor(model => model.Servico)
-			</dt>
-			<dd class="col-sm-6" style="text-align:left">
-				@Html.DisplayFor(model => model.Servico)
-			</dd>
-			<dt class="col-sm-6" style="text-align:right">
 				@Html.DisplayNameFor(model => model.Pessoas)
 			</dt>
 			<div style="padding-left:15px">
@@ -35,6 +29,17 @@
 				{
 					<dd style="text-align:left">
 						@Html.DisplayFor(modelItem => item.Nome);
+					</dd>
+				}
+			</div>
+			<dt class="col-sm-6" style="text-align:right">
+				@Html.DisplayNameFor(model => model.Servicos)
+			</dt>
+			<div style="padding-left:15px">
+				@foreach (var item in Model.Servicos)
+				{
+					<dd style="text-align:left">
+						@Html.DisplayFor(modelItem => item);
 					</dd>
 				}
 			</div>
