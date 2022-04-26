@@ -35,6 +35,14 @@
 	@if(TempData["semEquipe"] != null){
 		<script src="~/js/exportInvalidTeam.js"></script>
 	}
+	
+	@if(TempData["semServico"] != null){
+		<script src="~/js/exportInvalidService.js"></script>
+	}
+
+	@if(TempData["necessarioExportar"] != null){
+		<script src="~/js/importarPrimeiro.js"></script>
+	}
 @*<script src="~/js/exportSuccess.js"></script>*@
 
 <script src="~/js/cidade.js"></script>

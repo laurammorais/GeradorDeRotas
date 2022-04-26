@@ -1,7 +1,7 @@
 ﻿Swal.fire({
     icon: 'error',
     title: 'Oops...',
-    text: 'Nenhuma equipe disponível para estes filtros.',
+    text: 'O Campo Serviço é obrigatório!',
     timer: 2000,
     showConfirmButton: false,
 })

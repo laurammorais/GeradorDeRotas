@@ -9,11 +9,12 @@ using GeradorDeRotas.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Models;
 using Xceed.Words.NET;
 
 namespace GeradorDeRotas.Controllers
 {
-	public class WordController : Controller
+    public class WordController : Controller
     {
         private readonly EquipeService _equipeService;
         private readonly ExcelService _excelService;
@@ -32,6 +33,15 @@ namespace GeradorDeRotas.Controllers
 
             var excel = _excelService.Get();
 
+            if(excel == null)
+			{
+                TempData["necessarioExportar"] = "Falha!";
+                ViewBag.Rotas = new SelectList(new List<string>());
+                ViewBag.Servicos = new SelectList(new List<string>());
+                ViewBag.Cidades = new SelectList(new List<string>());
+                return View();
+            }
+
             foreach (var item in excel.ArquivosExcel.First())
                 rotas.Add(item.Name);
 
@@ -43,7 +53,6 @@ namespace GeradorDeRotas.Controllers
             return View();
         }
 
-        // POST: WordController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -51,6 +60,12 @@ namespace GeradorDeRotas.Controllers
         {
             try
             {
+                if (word.Servico == null)
+                {
+                    TempData["semServico"] = "Nenhum serviço selecionado.";
+                    return RedirectToAction(nameof(Export));
+                }
+
                 var stream = new MemoryStream();
                 var doc = DocX.Create(stream);
 
@@ -65,17 +80,29 @@ namespace GeradorDeRotas.Controllers
                 if (word.Cidade != null)
                     equipes = equipes.FindAll(x => x.Cidade == word.Cidade);
 
-                if ( !equipes.Any())
+                var excel = _excelService.Get();
+                excel.ArquivosExcel.RemoveAll(x => x.GetValue("SERVIÇO") != word.Servico);
+
+                var equipesValidas = new List<Equipe>();
+
+                foreach (var equipe in equipes)
+                {
+                    var dadosEquipe = excel.ArquivosExcel.Find(x => x.GetValue("CIDADE") == equipe.Cidade);
+
+                    if (dadosEquipe == null)
+                        continue;
+
+                    equipe.Cep = dadosEquipe.GetValue("CEP").ToString();
+                    equipesValidas.Add(equipe);
+                }
+
+                if (!equipesValidas.Any())
                 {
                     TempData["semEquipe"] = "Nenhuma equipe encontrada com este filtro!";
                     return RedirectToAction(nameof(Export));
                 }
 
-                var excel = _excelService.Get();
-
-                excel.ArquivosExcel.RemoveAll(x => x.GetValue("SERVIÇO") != word.Servico);
-
-                foreach (var equipe in equipes)
+                foreach (var equipe in equipesValidas.OrderBy(x => x.Cep))
                 {
                     var dadosEquipe = excel.ArquivosExcel.Find(x => x.GetValue("CIDADE") == equipe.Cidade);
 
@@ -85,11 +112,12 @@ namespace GeradorDeRotas.Controllers
                     paragrafo = doc.InsertParagraph();
                     paragrafo.Append($"Nome da Equipe: {equipe.NomeEquipe}").Font("Times New Roman").FontSize(15).Bold();
 
-					dadosEquipe.TryGetValue("CONTRATO", out var contrato);
-					dadosEquipe.TryGetValue("ASSINANTE", out var assinante);
-					dadosEquipe.TryGetValue("PERÍODO", out var periodo);
-					paragrafo = doc.InsertParagraph();
+
                     paragrafo = doc.InsertParagraph();
+                    paragrafo = doc.InsertParagraph();
+                    dadosEquipe.TryGetValue("CONTRATO", out var contrato);
+                    dadosEquipe.TryGetValue("ASSINANTE", out var assinante);
+                    dadosEquipe.TryGetValue("PERÍODO", out var periodo);
                     paragrafo.Append($"Contrato: {contrato}  -  Assinante: {assinante}  -  Período: {periodo}").Font("Times New Roman").FontSize(14).Bold().UnderlineStyle(Xceed.Document.NET.UnderlineStyle.singleLine);
 
                     paragrafo = doc.InsertParagraph();
@@ -111,6 +139,8 @@ namespace GeradorDeRotas.Controllers
                 }
 
                 doc.Save();
+
+                TempData["exportarSucesso"] = "Sucesso!";
 
                 return File(stream.ToArray(), "application/octet-stream", "Rotas.docx");
             }

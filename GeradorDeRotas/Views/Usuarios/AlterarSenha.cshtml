@@ -1,0 +1,46 @@
+﻿@model Models.Usuario
+
+@{
+	ViewData["Title"] = "AlterarSenha";
+}
+<div style="text-align: center; margin-top: 80px">
+	<h2>Alterar Senha</h2>
+
+	<div style="margin-top: 20px" class="row justify-content-md-center">
+		<div class="col-md-4">
+			<form asp-action="AlterarSenha">
+				<div class="form-group">
+					Login
+					<input asp-for="Username" class="form-control" />
+				</div>
+				<div class="form-group">
+					Senha Atual
+					<input asp-for="Senha" type="password" class="form-control" />
+				</div>
+				<div class="form-group">
+					Nova Senha
+					<input asp-for="NovaSenha" type="password" class="form-control" />
+				</div>
+				<div class="form-group">
+					<input type="submit" value="Save" class="btn btn-primary" />
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+		@if(TempData["registroInvalido"] != null){
+			<script src="~/js/registerInvalid.js"></script>
+		}
+		@if(TempData["usuarioInvalido"] != null){
+			<script src="~/js/usuarioInvalido.js "></script>
+		}
+		@if(TempData["alteracaoSucesso"] != null){
+			<script src="~/js/alterarSenha.js"></script>
+		}
+
+    @{
+	await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

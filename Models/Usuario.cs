@@ -7,11 +7,20 @@ namespace Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; private set; }
+        public string Id { get; set; }
+
         public string Nome { get; set; }
+
         public string Username { get; set; }
+
         public string Senha { get; set; }
-        public bool Valido => Nome != null && Username != null && Senha != null;
+
+        [BsonIgnore]
+		public string NovaSenha { get; set; }
+
+		public bool Valido => Nome != null && Username != null && Senha != null;
+
+        public bool AlteracaoValida => Username != null && Senha != null && NovaSenha != null;
 
         public bool LoginValido(Usuario login) => login != null && login.Username == Username && login.Senha == Senha;
     }

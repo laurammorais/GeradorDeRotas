@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace GeradorDeRotas.Services
 {
-	public class UsuarioService
+    public class UsuarioService
     {
         HttpClient httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:44300/api/usuarios/") };
         public async Task<Usuario> GetByUsername(string username)
@@ -37,6 +37,15 @@ namespace GeradorDeRotas.Services
 
             var response = await httpClient.PostAsJsonAsync("", usuario);
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task Update(Usuario usuario)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            await httpClient.PutAsJsonAsync(usuario.Id, usuario);
         }
     }
 }

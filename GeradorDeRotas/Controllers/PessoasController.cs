@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using GeradorDeRotas.Services;
 using GeradorDeRotas.Validators;
 using Microsoft.AspNetCore.Authorization;
@@ -55,11 +56,10 @@ namespace GeradorDeRotas.Controllers
                     return View();
                 }
 
-                TempData["pessoaSuccess"] = "Pessoa criada com sucesso!";
-
+                TempData["pessoaSucesso"] = "Pessoa criada com sucesso!";
 
                 await _pessoaService.Create(pessoa);
-                return RedirectToAction(nameof(Index));
+                return View();
             }
             catch
             {
@@ -116,6 +116,21 @@ namespace GeradorDeRotas.Controllers
         {
             try
             {
+                var pessoa = await _pessoaService.Get(id);
+
+                var equipe = await _equipeService.GetByCpf(pessoa.Cpf);
+                if (equipe != null)
+                {
+                    equipe.Pessoas.RemoveAll(x => x.Cpf == pessoa.Cpf);
+
+                    if (!equipe.Pessoas.Any())
+                        equipe.Disponivel = false;
+
+                    await _equipeService.Update(equipe.Id, equipe);
+                }
+
+				
+
                 await _pessoaService.Remove(id);
                 return RedirectToAction(nameof(Index));
             }

@@ -33,5 +33,12 @@ namespace UsuarioApi.Controllers
             _usuarioService.Create(usuario);
             return Ok();
         }
+
+        [HttpPut("{id}")]
+        public ActionResult<Usuario> Update(string id, Usuario usuario)
+        {
+            _usuarioService.Update(id, usuario);
+            return Ok();
+        }
     }
 }

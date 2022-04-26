@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using GeradorDeRotas.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,14 @@ namespace GeradorDeRotas.Controllers
         {
             var pessoas = await _pessoaService.GetDisponivel();
             ViewBag.Pessoas = new MultiSelectList(pessoas, "Cpf", "Nome");
+            var excel = _excelService.Get();
+
+            if (excel == null)
+			{
+                TempData["necessarioExportar"] = "Falha";
+                return RedirectToAction(nameof(Index));
+            }
+
             ViewBag.Cidades = new SelectList(_excelService.GetCidades());
 
             return View();
@@ -49,6 +58,12 @@ namespace GeradorDeRotas.Controllers
         {
             try
             {
+                if (!equipe.Valida)
+                {
+                    TempData["equipeInvalida"] = "equipe inválida.";
+                    return RedirectToAction(nameof(Create));
+                }
+
                 foreach (var cpf in equipe.Cpfs)
                 {
                     var pessoa = await _pessoaService.GetByCpf(cpf);
@@ -56,8 +71,11 @@ namespace GeradorDeRotas.Controllers
                     pessoa.Disponivel = false;
                     await _pessoaService.Update(pessoa.Id, pessoa);
                 }
+
+                TempData["equipeSucesso"] = "Equipe criada com sucesso!";
+
                 await _equipeService.Create(equipe);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Create));
             }
             catch
             {
@@ -69,6 +87,8 @@ namespace GeradorDeRotas.Controllers
         [Authorize]
         public async Task<ActionResult> Edit(string id)
         {
+            ViewBag.Cidades = new SelectList(_excelService.GetCidades());
+
             var equipe = await _equipeService.Get(id);
             if (equipe == null)
                 return NotFound("Equipe não encontrada!");
@@ -83,8 +103,16 @@ namespace GeradorDeRotas.Controllers
         {
             try
             {
-                equipe.SetId(id);
-                await _equipeService.Update(id, equipe);
+                if (!equipe.EditarValido)
+                {
+                    TempData["equipeInvalida"] = "equipe inválida.";
+                    return RedirectToAction(nameof(Edit));
+                }
+
+                var equipeResponse = await _equipeService.Get(id);
+                equipeResponse.AlterarCidadeNome(equipe.NomeEquipe, equipe.Cidade);
+
+                await _equipeService.Update(id, equipeResponse);
                 return RedirectToAction(nameof(Index));
             }
             catch

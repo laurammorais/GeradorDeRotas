@@ -22,9 +22,15 @@
 				@Html.DisplayFor(model => model.Cidade)
 			</dd>
 			<dt class="col-sm-6" style="text-align:right">
+				@Html.DisplayNameFor(model => model.Disponivel)
+			</dt>
+			<dd class="col-sm-6" style="text-align:left">
+				@Html.DisplayFor(model => model.Disponivel)
+			</dd>
+			<dt class="col-sm-6" style="text-align:right">
 				@Html.DisplayNameFor(model => model.Pessoas)
 			</dt>
-			<div style="padding-left:15px">
+			<div class="col-sm-6" style="padding-left:15px">
 				@foreach (var item in Model.Pessoas)
 				{
 					<dd style="text-align:left">
@@ -35,7 +41,7 @@
 			<dt class="col-sm-6" style="text-align:right">
 				@Html.DisplayNameFor(model => model.Servicos)
 			</dt>
-			<div style="padding-left:15px">
+			<div class="col-sm-6"  style="padding-left:15px; padding-bottom: 20px">
 				@foreach (var item in Model.Servicos)
 				{
 					<dd style="text-align:left">

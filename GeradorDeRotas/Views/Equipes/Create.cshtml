@@ -34,6 +34,13 @@
 </div>
 
 @section Scripts {
+	@if(TempData["equipeInvalida"] != null){
+		<script src="~/js/camposObrigatorios.js "></script>
+	}
+
+	@if(TempData["equipeSucesso"] != null){
+		<script src="~/js/equipeValida.js"></script>
+	}
 
     @{
 	await Html.RenderPartialAsync("_ValidationScriptsPartial");

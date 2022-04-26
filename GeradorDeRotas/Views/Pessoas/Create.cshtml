@@ -29,23 +29,29 @@
 
 @section Scripts {
 
-	<script src="~/js/cpf.js"></script>
+<script src="~/js/cpf.js"></script>
 
 	@if(TempData["cpfInvalido"] != null){
-	<script src="~/js/cpfInvalido.js"></script>
-
+		<script src="~/js/cpfInvalido.js"></script>
 	}
 
 	@if(TempData["cpfCadastrado"] != null){
-	<script src="~/js/cpfCadastrado.js"></script>
+		<script src="~/js/cpfCadastrado.js"></script>
 	}
 
 	@if(TempData["camposObrigatorios"] != null){
-	<script src="~/js/camposObrigatorios.js"></script>
+		<script src="~/js/camposObrigatorios.js"></script>
 	}
 
 	@if(TempData["pessoaSucesso"] != null){
-		<script src="~/js/pessoaSuccess.js"></script>
+		<script>
+			Swal.fire({
+				icon: 'success',
+				title: 'Pessoa criada com sucesso!',
+				showConfirmButton: false,
+				timer: 2000
+			}).then(()=> location.href = "https://localhost:44312/Pessoas") 
+		</script>
 	}
 
     @{

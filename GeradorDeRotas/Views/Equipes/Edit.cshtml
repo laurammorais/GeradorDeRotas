@@ -1,36 +1,44 @@
-﻿@model 			Models.Equipe
+﻿@model Models.Equipe
 
 @{
-    ViewData["Title"] = "Edit";
+	ViewData["Title"] = "Edit";
 }
+<div style="margin-top: 100px; text-align: center">
+	<h2 style="margin-bottom: 20px">Editar Equipe</h2>
 
-<h2>Editar Equipe</h2>
+	<div class="row justify-content-md-center">
+		<div class="col-md-4">
+			<form asp-action="Edit">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<div class="form-group">
+					Nome da Equipe
+					<input asp-for="NomeEquipe" class="form-control" />
+					<span asp-validation-for="NomeEquipe" class="text-danger"></span>
+				</div>
+				<div class="form-group">
+					Cidade
+					@Html.DropDownListFor(model => model.Cidade, ViewBag.Cidades as SelectList, "Selecione...", new{ @class = "form-control" })
+				</div>
+				<div class="form-group">
+					<a style="margin-right:20px" asp-action="Index">Voltar</a>
+					<input type="submit" value="Salvar" class="btn btn-primary" />
+				</div>
+			</form>
+		</div>
+	</div>
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                Nome da Equipe
-                <input asp-for="NomeEquipe" class="form-control" />
-                <span asp-validation-for="NomeEquipe" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Cidade" class="control-label"></label>
-                <input asp-for="Cidade" class="form-control" />
-                <span asp-validation-for="Cidade" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Salvar" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+	<div>
+	</div>
 </div>
 
-<div>
-    <a asp-action="Index">Voltar</a>
-</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	
+	@if(TempData["equipeInvalida"] != null){
+		<script src="~/js/camposObrigatorios.js "></script>
+	}
+
+    @{
+	await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
 }

@@ -101,5 +101,53 @@ namespace GeradorDeRotas.Controllers
                 return View();
             }
         }
+
+        public ActionResult AlterarSenha() => View();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> AlterarSenha(Usuario usuario)
+        {
+            try
+            {
+                if (!usuario.AlteracaoValida)
+                {
+                    TempData["registroInvalido"] = "Invalido";
+                    return View();
+                }
+
+                var login = await _usuarioService.GetByUsername(usuario.Username);
+
+                if (login == null || login.Senha != usuario.Senha)
+                {
+                    TempData["usuarioInvalido"] = "Invalido";
+                    return View();
+                }
+
+                login.Senha = usuario.NovaSenha;
+
+                await _usuarioService.Update(login);
+
+                var claims = new List<Claim>
+                    {
+                        new Claim("username", usuario.Username),
+                        new Claim(ClaimTypes.NameIdentifier, usuario.Username),
+                        new Claim(ClaimTypes.Name, login.Nome.Split(" ").First())
+                    };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+                await HttpContext.SignInAsync(claimsPrincipal);
+
+                TempData["alteracaoSucesso"] = "Sucesso";
+
+                return View();
+            }
+            catch
+            {
+                return View();
+            }
+        }
     }
 }

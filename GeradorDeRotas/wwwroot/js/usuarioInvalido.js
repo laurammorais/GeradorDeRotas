@@ -1,7 +1,7 @@
 ﻿Swal.fire({
     icon: 'error',
     title: 'Oops...',
-    text: 'Nenhuma equipe disponível para estes filtros.',
+    text: 'Login ou senha inválidos!',
     timer: 2000,
     showConfirmButton: false,
 })
