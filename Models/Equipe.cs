@@ -2,9 +2,9 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace GeradorDeRotas.Models
+namespace Models
 {
-    public class Equipe
+	public class Equipe
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

@@ -67,7 +67,7 @@ namespace GeradorDeRotas.Controllers
                 var excel = _saveExcelService.Get();
 
                 if (word.Servico != null)
-                    equipes =  equipes.FindAll(x => x.Servico == word.Servico);
+                    equipes = equipes.FindAll(x => x.Servico == word.Servico);
 
                 if (word.Cidade != null)
                     equipes = equipes.FindAll(x => x.Cidade == word.Cidade);

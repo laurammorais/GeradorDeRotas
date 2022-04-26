@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using EquipesApi.Services;
-using GeradorDeRotas.Models;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace EquipesApi.Controllers
 {
 
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
     [ApiController]
     public class EquipesController : ControllerBase
     {

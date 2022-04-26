@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
-using GeradorDeRotas.Models;
 using GeradorDeRotas.Services;
 using GeradorDeRotas.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace GeradorDeRotas.Controllers
 {
-    public class PessoasController : Controller
+	public class PessoasController : Controller
     {
         private readonly PessoaService _pessoaService;
         private readonly EquipeService _equipeService;

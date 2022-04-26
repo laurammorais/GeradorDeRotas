@@ -4,13 +4,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using GeradorDeRotas.Models;
-using MongoDB.Driver;
+using Models;
 using Newtonsoft.Json;
 
 namespace GeradorDeRotas.Services
 {
-    public class EquipeService
+	public class EquipeService
     {
         private readonly HttpClient httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:44387/api/equipes/") };
 

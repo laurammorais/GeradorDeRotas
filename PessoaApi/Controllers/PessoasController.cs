@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using GeradorDeRotas.Models;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 using PessoaApi.Services;
 
 namespace PessoaApi.Controllers
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
     [ApiController]
     public class PessoasController : ControllerBase
     {

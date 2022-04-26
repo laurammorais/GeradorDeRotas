@@ -1,38 +1,36 @@
-﻿@model GeradorDeRotas.Models.Pessoa
-
-@{
-    ViewData["Title"] = "Edit";
+﻿@model Models.Pessoa
+	wData["Title"] = "Edit";
 }
 
 <h2>Editar Pessoa</h2>
 
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
-                <input asp-for="Nome" class="form-control" />
-                <span asp-validation-for="Nome" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Cpf" class="control-label"></label>
-                <input readonly id="cpf" asp-for="Cpf" class="form-control" />
-                <span asp-validation-for="Cpf" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Salvar" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+	v class="col-md-4">
+		asp-action="Edit">
+			validation-summary="ModelOnly" class="text-danger"></div>
+			s="form-group">
+				or="Nome" class="control-label"></label>
+				or="Nome" class="form-control" />
+				lidation-for="Nome" class="text-danger"></span>
+						s="form-group">
+				or="Cpf" class="control-label"></label>
+				nly id="cpf" asp-for="Cpf" class="form-control" />
+				lidation-for="Cpf" class="text-danger"></span>
+						s="form-group">
+				"submit" value="Salvar" class="btn btn-primary" />
+					>
+	iv>
 </div>
 
 <div>
-    <a asp-action="Index">Voltar</a>
+	asp-action="Index">Voltar</a>
 </div>
 
 @section Scripts {
 	<script src="~/js/cpf.js"></script>
 
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+	
+	await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
 }

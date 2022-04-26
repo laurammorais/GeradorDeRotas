@@ -14,11 +14,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using UsuarioApi.Utils;
 
 namespace EquipesApi
 {
-    public class Startup
+	public class Startup
     {
         public Startup(IConfiguration configuration)
         {

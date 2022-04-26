@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
-using GeradorDeRotas.Models;
 using GeradorDeRotas.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Models;
 
 namespace GeradorDeRotas.Controllers
 {
-    public class EquipesController : Controller
+	public class EquipesController : Controller
     {
         private readonly EquipeService _equipeService;
         private readonly ExcelService _excelService;

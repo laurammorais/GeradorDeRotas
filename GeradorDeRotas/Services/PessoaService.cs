@@ -4,12 +4,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using GeradorDeRotas.Models;
+using Models;
 using Newtonsoft.Json;
 
 namespace GeradorDeRotas.Services
 {
-    public class PessoaService
+	public class PessoaService
     {
         private readonly HttpClient httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:44327/api/pessoas/") };
 

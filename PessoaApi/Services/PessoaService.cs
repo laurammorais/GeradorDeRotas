@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using GeradorDeRotas.Models;
-using GeradorDeRotas.Utils;
+using Models;
 using MongoDB.Driver;
+using PessoaApi.Utils;
 
 namespace PessoaApi.Services
 {
-    public class PessoaService
+	public class PessoaService
     {
         private readonly IMongoCollection<Pessoa> _pessoa;
         public PessoaService(IMongoSettings settings)

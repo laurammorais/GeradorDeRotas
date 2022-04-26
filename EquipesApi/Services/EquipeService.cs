@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using EquipesApi.Utils;
-using GeradorDeRotas.Models;
+using Models;
 using MongoDB.Driver;
 
 namespace EquipesApi.Services
 {
-    public class EquipeService
+	public class EquipeService
     {
         private readonly IMongoCollection<Equipe> _equipe;
         public EquipeService(IMongoSettings settings)
