@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace GeradorDeRotas.Services
 {
-	public class EquipeService
+    public class EquipeService
     {
         private readonly HttpClient httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:44387/api/equipes/") };
 
@@ -77,6 +77,23 @@ namespace GeradorDeRotas.Services
 
             var equipeString = await response.Content.ReadAsStringAsync();
             var equipe = JsonConvert.DeserializeObject<Equipe>(equipeString);
+
+            return equipe;
+        }
+
+        public async Task<List<Equipe>> GetDisponivelByCidade(string cidade)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"Cidade/{cidade}");
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var equipeString = await response.Content.ReadAsStringAsync();
+            var equipe = JsonConvert.DeserializeObject<List<Equipe>>(equipeString);
 
             return equipe;
         }

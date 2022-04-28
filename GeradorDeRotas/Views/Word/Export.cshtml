@@ -22,7 +22,10 @@
 			<div class="form-group">
 				<label asp-for="Cidade" class="control-label"></label>
 					@Html.DropDownListFor(model => model.Cidade, ViewBag.Cidades as SelectList, "Selecione...", new{ @class = "form-control" })
-				<span asp-validation-for="Cidade" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label class="control-label">Equipes</label>
+				@Html.ListBoxFor(model => model.EquipeIds, ViewBag.Equipes as MultiSelectList, new { @class = "form-control", id = "multiSelectDropDown2", multiple = "multiple" })
 			</div>
 			<div class="form-group">
 				<input type="submit" value="Exportar" class="btn btn-primary" />
@@ -37,7 +40,13 @@
 	}
 	
 	@if(TempData["semServico"] != null){
-		<script src="~/js/exportInvalidService.js"></script>
+		<script>Swal.fire({
+    icon: 'error',
+    title: 'Oops...',
+    text: 'Os Campos Serviço, Cidade e Equipes são obrigatórios!',
+    timer: 2000,
+    showConfirmButton: false,
+})</script>
 	}
 
 	@if(TempData["necessarioExportar"] != null){
@@ -46,6 +55,7 @@
 @*<script src="~/js/exportSuccess.js"></script>*@
 
 <script src="~/js/cidade.js"></script>
+<script src="~/js/equipeSelect.js"></script>
     @{
 	await Html.RenderPartialAsync("_ValidationScriptsPartial");
 }

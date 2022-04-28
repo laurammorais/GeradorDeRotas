@@ -24,6 +24,8 @@ namespace EquipesApi.Services
 
         public Equipe GetByCpf(string cpf) => Get().FirstOrDefault(x => x.Pessoas.Any(x => x.Cpf == cpf));
 
+        public List<Equipe> GetByCidade(string cidade) => GetDisponivel().FindAll(x => x.Cidade == cidade);
+
         public void Create(Equipe equipe) => _equipe.InsertOne(equipe);
 
         public void Update(string id, Equipe equipe) => _equipe.ReplaceOne(x => x.Id == id, equipe);

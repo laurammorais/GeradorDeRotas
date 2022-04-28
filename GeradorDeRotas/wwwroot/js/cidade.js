@@ -8,7 +8,6 @@
 function ListarCidades(value) {
     var url = "/Select/FiltrarCidadesPorServico";
     var data = { servico: value };
-    console.log("listar cidades")
     $("#Cidade").empty();
 
     $.ajax({

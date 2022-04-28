@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using EquipesApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -36,7 +37,6 @@ namespace EquipesApi.Controllers
             return buscarEquipe;
         }
 
-
         [HttpGet("Cpf/{cpf}")]
         public ActionResult<Equipe> GetByCpf(string cpf)
         {
@@ -44,6 +44,15 @@ namespace EquipesApi.Controllers
             if (buscarEquipe == null)
                 return NotFound("Equipe não encontrada");
             return buscarEquipe;
+        }
+
+        [HttpGet("Cidade/{cidade}")]
+        public ActionResult<List<Equipe>> GetByCidade(string cidade)
+        {
+            var equipes = _equipeService.GetByCidade(cidade);
+            if (!equipes.Any())
+                return NotFound("Nenhuma equipe encontrada");
+            return equipes;
         }
 
         // POST api/<PessoasController>

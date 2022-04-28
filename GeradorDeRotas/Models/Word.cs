@@ -7,5 +7,6 @@ namespace GeradorDeRotas.Models
         public List<string> Rotas { get; set; } = new List<string>();
         public string Cidade { get; set; }
         public string Servico { get; set; }
+        public List<string> EquipeIds { get; set; } = new List<string>();
     }
 }

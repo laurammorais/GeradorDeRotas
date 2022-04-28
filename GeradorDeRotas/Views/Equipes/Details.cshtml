@@ -38,17 +38,6 @@
 					</dd>
 				}
 			</div>
-			<dt class="col-sm-6" style="text-align:right">
-				@Html.DisplayNameFor(model => model.Servicos)
-			</dt>
-			<div class="col-sm-6"  style="padding-left:15px; padding-bottom: 20px">
-				@foreach (var item in Model.Servicos)
-				{
-					<dd style="text-align:left">
-						@Html.DisplayFor(modelItem => item);
-					</dd>
-				}
-			</div>
 			<a asp-action="Index"  class="col-sm-6" style="text-align:right">Voltar</a>
 			<a asp-action="Edit" asp-route-id="@Model.Id" class="col-sm-6" style="text-align: left">Editar</a>
 		</dl>

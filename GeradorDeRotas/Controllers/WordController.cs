@@ -33,12 +33,13 @@ namespace GeradorDeRotas.Controllers
 
             var excel = _excelService.Get();
 
-            if(excel == null)
-			{
+            if (excel == null)
+            {
                 TempData["necessarioExportar"] = "Falha!";
                 ViewBag.Rotas = new SelectList(new List<string>());
                 ViewBag.Servicos = new SelectList(new List<string>());
                 ViewBag.Cidades = new SelectList(new List<string>());
+                ViewBag.Equipes = new MultiSelectList(new List<string>(), "Id", "NomeEquipe");
                 return View();
             }
 
@@ -49,7 +50,8 @@ namespace GeradorDeRotas.Controllers
 
             ViewBag.Rotas = new SelectList(rotas);
             ViewBag.Servicos = new SelectList(_excelService.GetServicos());
-            ViewBag.Cidades = new SelectList(_excelService.GetCidades());
+            ViewBag.Cidades = new SelectList(new List<string>());
+            ViewBag.Equipes = new MultiSelectList(new List<string>(), "Id", "NomeEquipe");
             return View();
         }
 
@@ -75,67 +77,63 @@ namespace GeradorDeRotas.Controllers
                 paragrafo = doc.InsertParagraph();
                 paragrafo.Append("RETORNOS").Font("Times New Roman").FontSize(15).Bold().Alignment = Xceed.Document.NET.Alignment.center;
 
-                var equipes = await _equipeService.GetDisponivel();
-
-                if (word.Cidade != null)
-                    equipes = equipes.FindAll(x => x.Cidade == word.Cidade);
 
                 var excel = _excelService.Get();
                 excel.ArquivosExcel.RemoveAll(x => x.GetValue("SERVIÇO") != word.Servico);
 
-                var equipesValidas = new List<Equipe>();
+                var equipes = new List<Equipe>();
 
-                foreach (var equipe in equipes)
+                foreach (var equipeId in word.EquipeIds)
+                    equipes.Add(await _equipeService.Get(equipeId));
+
+                var dadosEquipe = excel.ArquivosExcel.FindAll(x => x.GetValue("CIDADE") == word.Cidade).OrderBy(x => x.GetValue("CEP"));
+
+                var qtdServicosEquipe = Math.Floor((double)dadosEquipe.Count() / equipes.Count);
+                var resto = dadosEquipe.Count() % equipes.Count;
+
+                var indice = 0;
+                var indiceEquipe = 0;
+
+                foreach (var dadoEquipe in dadosEquipe)
                 {
-                    var dadosEquipe = excel.ArquivosExcel.Find(x => x.GetValue("CIDADE") == equipe.Cidade);
+                    if (qtdServicosEquipe <= 0 || (resto > 0 && indice == qtdServicosEquipe + 1) || (resto == 0 && indice == qtdServicosEquipe))
+                    {
+                        indiceEquipe++;
+                        indice = 0;
+                    }
 
-                    if (dadosEquipe == null)
-                        continue;
+                    var equipe = equipes[indiceEquipe];
 
-                    equipe.Cep = dadosEquipe.GetValue("CEP").ToString();
-                    equipesValidas.Add(equipe);
-                }
-
-                if (!equipesValidas.Any())
-                {
-                    TempData["semEquipe"] = "Nenhuma equipe encontrada com este filtro!";
-                    return RedirectToAction(nameof(Export));
-                }
-
-                foreach (var equipe in equipesValidas.OrderBy(x => x.Cep))
-                {
-                    var dadosEquipe = excel.ArquivosExcel.Find(x => x.GetValue("CIDADE") == equipe.Cidade);
+                    if (indice == 0)
+                    {
+                        paragrafo = doc.InsertParagraph();
+                        paragrafo = doc.InsertParagraph();
+                        paragrafo = doc.InsertParagraph();
+                        paragrafo = doc.InsertParagraph();
+                        paragrafo.Append($"Nome da Equipe: {equipe.NomeEquipe}").Font("Times New Roman").FontSize(15).Bold();
+                    }
 
                     paragrafo = doc.InsertParagraph();
                     paragrafo = doc.InsertParagraph();
-                    paragrafo = doc.InsertParagraph();
-                    paragrafo = doc.InsertParagraph();
-                    paragrafo.Append($"Nome da Equipe: {equipe.NomeEquipe}").Font("Times New Roman").FontSize(15).Bold();
-
-
-                    paragrafo = doc.InsertParagraph();
-                    paragrafo = doc.InsertParagraph();
-                    dadosEquipe.TryGetValue("CONTRATO", out var contrato);
-                    dadosEquipe.TryGetValue("ASSINANTE", out var assinante);
-                    dadosEquipe.TryGetValue("PERÍODO", out var periodo);
+                    dadoEquipe.TryGetValue("CONTRATO", out var contrato);
+                    dadoEquipe.TryGetValue("ASSINANTE", out var assinante);
+                    dadoEquipe.TryGetValue("PERÍODO", out var periodo);
                     paragrafo.Append($"Contrato: {contrato}  -  Assinante: {assinante}  -  Período: {periodo}").Font("Times New Roman").FontSize(14).Bold().UnderlineStyle(Xceed.Document.NET.UnderlineStyle.singleLine);
 
                     paragrafo = doc.InsertParagraph();
-                    paragrafo.Append($"Endereço: {dadosEquipe.GetValue("ENDEREÇO")} - {dadosEquipe.GetValue("CEP")}").Font("Times New Roman").FontSize(14);
+                    paragrafo.Append($"Endereço: {dadoEquipe.GetValue("ENDEREÇO")} - {dadoEquipe.GetValue("CEP")}").Font("Times New Roman").FontSize(14);
 
                     paragrafo = doc.InsertParagraph();
-                    paragrafo.Append($"O.S: {dadosEquipe.GetValue("OS")}  -  ").Font("Times New Roman").FontSize(14);
-                    paragrafo.Append($"TIPO O.S: {dadosEquipe.GetValue("TIPO OS")}").Font("Times New Roman").FontSize(14).Color(Color.White).Highlight(Xceed.Document.NET.Highlight.red);
+                    paragrafo.Append($"O.S: {dadoEquipe.GetValue("OS")}  -  ").Font("Times New Roman").FontSize(14);
+                    paragrafo.Append($"TIPO O.S: {dadoEquipe.GetValue("TIPO OS")}").Font("Times New Roman").FontSize(14).Color(Color.White).Highlight(Xceed.Document.NET.Highlight.red);
 
                     foreach (var rota in word.Rotas)
                     {
                         paragrafo = doc.InsertParagraph();
-                        paragrafo.Append($"{rota[0] + rota[1..].ToLower()}: {dadosEquipe.GetValue(rota)}").Font("Times New Roman").FontSize(14);
+                        paragrafo.Append($"{rota[0] + rota[1..].ToLower()}: {dadoEquipe.GetValue(rota)}").Font("Times New Roman").FontSize(14);
                     }
 
-                    equipe.Servicos.Add(word.Servico);
-                    equipe.IncrementarContagemDeServico();
-                    await _equipeService.Update(equipe.Id, equipe);
+                    indice++;
                 }
 
                 doc.Save();

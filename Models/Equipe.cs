@@ -17,10 +17,6 @@ namespace Models
 
         public string Cidade { get; set; }
 
-        public List<string> Servicos { get; set; } = new List<string>();
-
-        public int ContagemDeServico { get; set; }
-
         public bool Disponivel { get; set; } = true;
 
         [BsonIgnore]
@@ -34,13 +30,6 @@ namespace Models
 
         [BsonIgnore]
         public bool EditarValido => !string.IsNullOrEmpty(NomeEquipe) && !string.IsNullOrWhiteSpace(Cidade);
-
-        public void IncrementarContagemDeServico()
-        {
-            ContagemDeServico++;
-            if (ContagemDeServico >= 5)
-                Disponivel = false;
-        }
 
         public void AlterarCidadeNome(string nomeEquipe, string cidade)
         {
